@@ -1,0 +1,174 @@
+### Terminal de Julia (REPL)
+### =========================
+### Autor: Dr. Arturo Erdely
+### versión: 04-agosto-2024
+
+
+## Tamaño del texto en la terminal 
+
+# Se puede aumentar dejando presionada la tecla [ctrl] y
+# presionando la tecla [+] tantas veces como se desee
+
+# Se puede disminuir dejando presionada la tecla [ctrl] y
+# presionando la tecla [-] tantas veces como se desee
+
+# Significado de REPL: Repeat-Execute-Print-Loop
+
+
+
+## Modos: ejecución, ayuda, paquete 
+## --------------------------------
+
+# modo de ejecución: (por default, al iniciar la terminal de Julia)
+
+julia> 
+
+# y a continuación escribes la instrucción y luego presiona la tecla [intro]
+# por ejemplo:
+
+julia> 2 + 3 
+
+
+# entrar al modo ayuda: escribe el símbolo ?
+# y de inmediato aparecerá...
+
+help?> 
+
+# y escribes la instrucción de la que quieres ayuda, por ejemplo: println
+
+# si escribes a medias la instrucción puedes autocompletar con la tecla [tab],
+# en caso de haber solo una opción te completerá el nombre de la misma,
+# si nada ocurre puede ser que exista más de una opción, 
+# presiona una segunda vez la tecla [tab] y de haber varias opciones las mostrará,
+# si nada ocurrió entonces no hay opciones para mostrar. Intenta por ejemplo:
+
+help?> begi
+
+# y después de presionar la tecla [tab] lo completará a: begin
+# luego presiona la tecla [intro] y te mostrará la ayuda del comando
+
+help?> pri
+
+# después presionas la tecla [tab] y nada ocurre (aparentemente)
+# presiona [tab] una segunda vez y te aparecerán varias opciones:
+
+# primitive type
+# print
+# println
+# printstyled
+
+# termina de escribir la opción que deseas y luego presiona la tecla [intro]
+
+# Después de un consulta en el modo ayuda te regresa automáticamente
+# al modo de ejecución.
+
+# Si después de entrar al modo ayuda presionas la tecla [tab] dos veces
+# te mostrará el listado de todas las instrucciones válidas en Julia.
+
+# Estando en el modo ayuda, si deseas cancelarlo:
+# presiona la tecla retroceder [<-] hasta que regreses al modo ejecución.
+
+
+# modo para instalar/administrar paquetes externos: 
+# escribe el símbolo ] y de inmediato aparecerá...
+
+pkg> escribes aquí la instrucción, por ejemplo: help
+
+# lo anterior te mostrará todos los comandos válidos en el modo paquete,
+# intenta, por ejemplo:
+
+pkg> status
+
+# y te mostrará la lista de paquetes externos que has instalado, 
+# o bien una lista vacía si no has instalado alguno todavía
+
+# Con conexión a internet puedes instalar un paquete externo,
+# por ejemplo, instalemos el paquete OhMyREPL.jl:
+
+pkg> add OhMyREPL
+
+# con la siguiente instrucción listamos los paquetes instalados:
+
+pkg> status
+
+# y con la siguiente actualizamos:
+
+pkg> update
+
+# algunos paquetes, especialmente los de más reciente creación,
+# se actualizan con frecuencia, así que de vez en cuando
+# hay que actualizarlos todos con la instrucción update
+
+# salir del modo paquete: tecla retroceder [<-]
+
+# una vez instalado un paquete externo, cuando quieras usarlo ejecuta:
+
+julia> using OhMyREPL
+
+# este paquete aplica distintos colores a las instrucciones en Julia
+# para facilitar su legibilidad
+
+
+
+## Ejecutar instrucciones en la terminal
+## -------------------------------------
+
+# Si solo deseas trabajar directo en la terminal de Julia (sin VS Code) puedes
+# escribir instrucciones en la línea de comandos e irlas ejecutando. Intenta:
+
+f(x) = x^2 + 1
+
+f(3)
+
+# Si quieres ejecutar un bloque de varias instrucciones, puedes hacerlo así:
+
+begin
+    g(x,y) = x - 2y
+    u = 11
+    v = 4
+    g(u,v)
+end
+
+
+
+## Ejecutar código de Julia desde un archivo
+## -----------------------------------------
+
+# Esta instrucción te muestra la ruta de la carpeta actual:
+
+pwd() 
+
+# define la ruta de la carpeta donde se ubica el archivo, por ejemplo: 
+
+carpeta = "D:/Dropbox/Julia/mibiblio/REPL"
+
+# pero obviamente en tu caso seguramente será otra la ruta
+
+# cambiar a dicha carpeta:
+
+cd(carpeta)
+
+# Verificamos ruta de la carpeta actual:
+
+pwd()
+
+# listamos archivos de la carpeta actual
+
+readdir()
+
+# ejecutamos el código del archivo que le indiquemos, por ejemplo:
+
+include("prueba.jl")
+
+# a los nombres de archivos con código en julia se les agrega la extensión .jl
+# aunque en realidad son archivos de texto que podrías abrir, visualizar y editar
+# con cualquier herramienta que lo permita.
+
+
+
+## Salir de Julia
+## --------------
+
+# con la combinación de teclas [ctrl]+[D] o bien la instrucción:
+
+exit()
