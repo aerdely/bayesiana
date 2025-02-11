@@ -18,6 +18,8 @@ donde:
 - `xobs` = vector con la muestra aleatoria observada (por defecto: sin muestra)
 - `α, β` = hiperparámetros de la distribución a priori Gamma(α,β)
 
+> Requiere que el paquete `Distributions` sea previamente instalado.
+
 Entrega un tupla etiquetada con los siguientes elementos:
 
 1. `familia` = distribución de probabilidad

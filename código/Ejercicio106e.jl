@@ -12,11 +12,11 @@ using QuadGK, Plots, LaTeXStrings
 
 @doc bExpoEsc # consultar documentación 
 
-θ = 3.7; # fijando valor teórico para experimentar
+θ = 3.7 # fijando valor teórico para experimentar
 
 # se usa 1/θ por la reparametrización 
 # utilizada en el paquete `Distributions`
-X = Exponential(1/θ); 
+X = Exponential(1/θ)
 @doc Exponential 
 
 n = 100; # tamaño de muestra a simular
