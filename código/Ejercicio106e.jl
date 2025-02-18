@@ -374,7 +374,7 @@ postNoinfo.qp(0.5) # a posteriori no informativa
 ## densidades predictivas para X
 
 begin
-    x = range(X.ctl(0.005), X.ctl(0.995), length = 1_000)
+    x = range(X.ctl(0.0001), X.ctl(0.995), length = 1_000)
     plot(x, X.fdp.(x), lw = 3, color = :blue, label = "teórica")
     xaxis!(L"x"); yaxis!("densidad predictiva")
     plot!(x, prior.dp.(x), lw = 2, color = :gray, label = "a priori")
