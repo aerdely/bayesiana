@@ -2,9 +2,17 @@
 
 #=
     Exponencial(μ,θ)    μ ∈ ℜ    θ > 0
+
+    Línea | Caso
+    ------|-------------------
+      19  | μ = 0, θ > 0 desconocido
+     221  | μ ∈ ℜ desconocido, θ = 1
+     438  | μ ∈ ℜ conocido, θ > 0 desconocido
+     620  | μ ∈ ℜ desconocido, θ > 0 conocido          
+     822  | μ ∈ ℜ, θ > 0, ambos parámetros desconocidos
 =#
 
-using QuadGK, Plots, LaTeXStrings
+using QuadGK, HCubature, Plots, LaTeXStrings
 include("xbExponencial.jl")
 
 
@@ -807,4 +815,206 @@ begin # a posteriori no info
     histogram(xsim, normalize = true, label = "simulada", color = :white)
     xaxis!(L"x"); yaxis!("densidad predictiva")
     plot!(xval, post.dp.(xval), lw = 3, label = "a posteriori no info", color = :green)
+end
+
+
+
+### Caso: μ ∈ ℜ, θ > 0, ambos parámetros desconocidos
+
+@doc bExpo # consultar documentación 
+
+μ,θ = -1.5, 3.7; # valor teórico de los parámetros desconocidos
+X = vaExponencial(μ,θ);
+n = 100; # tamaño de muestra a simular
+xx = X.sim(n) # simular muestra observada
+
+## modelo bayesiano no informativo:
+
+post = bExpo(xx);
+keys(post)
+post.familia
+
+## marginal de μ a posteriori no informativa
+
+μ # valor teórico
+post.qμ(0.5) # estimación puntual a posteriori no informativa
+
+# densidad de μ
+begin
+    t = range(post.qμ(0.001), post.qμ(0.999), length = 1_000)
+    plot(t, post.dμ.(t), lw = 3, label = "a posteriori no info", color = :red)
+    xaxis!(L"μ")
+    yaxis!("densidad")
+    scatter!([μ], [0], ms = 5, color = :blue, label = "μ = $μ")
+end
+quadgk(post.dμ, -Inf, post.xmin)
+
+# función de distribución de μ
+begin
+    t = range(post.qμ(0.001), post.qμ(0.999), length = 1_000)
+    plot(t, post.pμ.(t), lw = 3, label = "a posteriori no info", color = :red)
+    xaxis!(L"\mu")
+    yaxis!("distribución")
+    p0 = post.qμ(0.001)
+    pm = post.qμ(0.5)
+    plot!([p0,pm], [0.5,0.5], color = :red, label = "")
+    plot!([pm,pm], [0.0,0.5], color = :red, label = "")
+    scatter!([pm], [0.0], ms = 5, color = :red, label = "μ* = $(round(pm,digits=2))")
+    scatter!([μ], [0], ms = 5, color = :blue, label = "μ = $μ")
+end
+
+# simulaciones de μ
+begin 
+    nsim = 10_000
+    μsim = post.rμ(nsim)
+    μmin, μmax = extrema(μsim)
+    μval = range(μmin, μmax, length = 1_000)
+    histogram(μsim, normalize = true, label = "simulada", color = :white)
+    xaxis!(L"μ"); yaxis!("densidad")
+    plot!(μval, post.dμ.(μval), lw = 3, label = "a posteriori no info", color = :red)
+    scatter!([μ], [0], ms = 5, color = :blue, label = "μ = $μ")
+end
+
+
+## marginal de θ a posteriori no informativa
+
+θ # valor teórico
+post.qθ(0.5) # estimación puntual a posteriori no informativa
+
+# densidad de θ
+begin
+    t = range(post.qθ(0.001), post.qθ(0.999), length = 1_000)
+    plot(t, post.dθ.(t), lw = 3, label = "a posteriori no info", color = :red)
+    xaxis!(L"θ")
+    yaxis!("densidad")
+    scatter!([θ], [0], ms = 5, color = :blue, label = "θ = $θ")
+end
+quadgk(post.dθ, 0, Inf)
+
+# función de distribución de θ
+begin
+    t = range(post.qθ(0.001), post.qθ(0.999), length = 1_000)
+    plot(t, post.pθ.(t), lw = 3, label = "a posteriori no info", color = :red)
+    xaxis!(L"θ")
+    yaxis!("distribución")
+    p0 = post.qθ(0.001)
+    pm = post.qθ(0.5)
+    plot!([p0,pm], [0.5,0.5], color = :red, label = "")
+    plot!([pm,pm], [0.0,0.5], color = :red, label = "")
+    scatter!([pm], [0.0], ms = 5, color = :red, label = "θ* = $(round(pm,digits=2))")
+    scatter!([θ], [0], ms = 5, color = :blue, label = "θ = $θ")
+end
+
+# simulaciones de θ
+begin 
+    nsim = 10_000
+    θsim = post.rθ(nsim)
+    θmin, θmax = extrema(θsim)
+    θval = range(θmin, θmax, length = 1_000)
+    histogram(θsim, normalize = true, label = "simulada", color = :white)
+    xaxis!(L"θ"); yaxis!("densidad")
+    plot!(θval, post.dθ.(θval), lw = 3, label = "a posteriori no info", color = :red)
+    scatter!([θ], [0.0], ms = 5, color = :blue, label = "θ = $θ")
+end
+
+
+## distribución conjunta a posteriori de (μ,θ)
+
+sim_μθ = post.r(10_000) # simulación de conjunta (μ,θ)
+
+μ # valor teórico
+post.qμ(0.5) # estimación puntual vía la mediana
+median(sim_μθ[:, 1]) # estimación puntual vía simulación
+
+θ # valor teórico 
+post.qθ(0.5) # estimación puntual vía la mediana
+median(sim_μθ[:, 2]) # estimación puntual vía simulación
+
+# densidad conjunta de (μ,θ) a posteriori (3D)
+begin 
+    ngrid = 100
+    x = collect(range(quantile(sim_μθ[:, 1], 0.03), maximum(sim_μθ[:, 1]), length = ngrid))
+    y = collect(range(minimum(sim_μθ[:, 2]), maximum(sim_μθ[:, 2]), length = ngrid))
+    z = zeros(ngrid, ngrid)
+    for i ∈ eachindex(x), j ∈ eachindex(y)
+        z[j, i] = post.d(x[i], y[j])
+    end
+    surface(x, y, z, xlabel = L"μ", ylabel = L"θ", size = (500, 500), 
+            zlabel = L"p(μ,θ\,|\,\mathbf{x}_{obs})", title = "densidad a posteriori")
+    scatter!([μ], [θ], [0.0], ms = 5, mc = :green, label = "(μ,θ) = ($μ,$θ)")
+end
+
+# densidad conjunta de (μ,θ) a posteriori (2D)
+begin
+    contour(x, y, z, xlabel = L"μ", ylabel = L"θ", fill = true, 
+            title = "densidad a posteriori", size = (500,500))
+    scatter!([μ], [θ], ms = 5, mc = :green, label = "(μ,θ) = ($μ,$θ)")    
+end
+
+# simulación conjunta de (μ,θ) a posteriori
+begin
+    scatter(sim_μθ[:, 1], sim_μθ[:, 2], ms = 1, mc = :gray, size = (500,500), label = "")
+    title!("Simulación conjunta a posteriori")
+    xaxis!(L"μ")
+    yaxis!(L"θ")
+    scatter!([μ], [θ], ms = 5, mc = :green, label = "(μ,θ) = ($μ,$θ)")
+end
+
+# Verificando ∬p(μ,θ|xobs)dμdθ = 1
+@doc hcubature # requiere paquete `HCubature` previamente instalado
+
+begin
+    f(x) = post.d(x[1],x[2])
+    a = [minimum(sim_μθ[:, 1]), minimum(sim_μθ[:, 2])]
+    b = [maximum(sim_μθ[:, 1]), maximum(sim_μθ[:, 2])]
+    hcubature(f, a, b)
+end
+
+
+## distribución predictiva a posteriori 
+
+# estimación puntual predictiva de la mediana:
+X.mediana # teórica
+mediana(μ,θ) = μ - log(1/2)/θ # fórmula de la mediana
+μ,θ
+mediana(μ,θ) # teórica
+post.qp(0.5) # estimación puntual
+# estimación vía simulación
+begin
+    ns = size(sim_μθ)[1]
+    msim = zeros(ns);
+    for i ∈ 1:ns
+        msim[i] = mediana(sim_μθ[i,1], sim_μθ[i,2])
+    end
+    mean(msim) 
+end
+
+# densidad predictiva
+quadgk(post.dp, -Inf, Inf) # ∫p(x|xobs)dx = 1
+begin
+    x = collect(range(post.qp(0.001), post.qp(0.99), length = 1_000))
+    plot(x, X.fdp.(x), lw = 3, color = :blue, label = "teórica")
+    xaxis!(L"x")
+    yaxis!("densidad")
+    plot!(x, post.dp.(x), lw = 1.7, color = :red, label = "predictiva")
+end
+
+# función de distribución predictiva 
+post.pp(-Inf), post.pp(Inf)
+begin
+    x = collect(range(post.qp(0.001), post.qp(0.99), length = 1_000))
+    plot(x, X.fda.(x), lw = 3, color = :blue, label = "teórica")
+    xaxis!(L"x")
+    yaxis!("función de distribución")
+    plot!(x, post.pp.(x), lw = 1.7, color = :red, label = "predictiva")
+end
+
+# simulación predictiva 
+begin
+    nsim = 10_000
+    xsim = post.rp(nsim)
+    histogram(xsim, normalize = true, color = :white, label = "simulada")
+    xaxis!(L"x"); yaxis!("densidad")
+    x = collect(range(post.qp(0.001), post.qp(0.99), length = 1_000))
+    plot!(x, post.dp.(x), lw = 3, color = :red, label = "predictiva")
 end
