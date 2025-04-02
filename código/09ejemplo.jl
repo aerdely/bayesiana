@@ -161,7 +161,7 @@ analizar(N, collect(1:1000))
 
 function sinreemplazo(A::Array, m::Integer)
     # muestra sin reemplazo de tamaño m a partir de n elementos (m ≤ n)
-    # requiere haber ejectado primero: using Random
+    # requiere haber ejecutado primero: using Random
     if m > length(A)
         error("m debe ser igual o menor que el número de elementos de A")
         return nothing
