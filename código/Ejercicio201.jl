@@ -10,7 +10,6 @@
 ## Paquetes y código necesarios
 
 using Distributions, Random, Plots, LaTeXStrings
-include("02probestim.jl")
 include("xbExponencial.jl")
 
 
@@ -42,7 +41,7 @@ end
 ## Muestreador de Gibbs 
 
 begin # generar cadenas de Markov
-    θG = 1.0 # valor inicial: θG > 0
+    θG = 100.0 # valor inicial: θG > 0
     nsim = 100_000
     M = zeros(nsim)
     T = zeros(nsim)
@@ -55,18 +54,18 @@ end
 
 @show(μ); # valor teórico
 begin # estimaciones puntuales de Gibbs
-    M0 = M[1:10_000] # primeros 10 mil valores
-    M1 = M[90_001:100_000] # últimos 10 mil valores
-    M2 = sinreemplazo(M[10_001:100_000], 10_000) # muestra sin reemplazo
+    M0 = M[1:10_000] # primeros 10 mil valores (no recomendable)
+    M1 = M[90_001:100_000] # últimos 10 mil valores (recomendable)
+    M2 = sinreemplazo(M[10_001:100_000], 10_000) # muestra sin reemplazo (muy recomendable)
     median.([M0, M1, M2])
 end
 post.qμ(0.5) # estimación puntual conjugada no informativa
 
 @show(θ); # valor teórico 
 begin # estimaciones puntuales de Gibbs
-    T0 = T[1:10_000] # primeros 10 mil valores
-    T1 = T[90_001:100_000] # últimos 10 mil valores
-    T2 = sinreemplazo(T[10_001:100_000], 10_000) # muestra sin reemplazo
+    T0 = T[1:10_000] # primeros 10 mil valores (no recomendable)
+    T1 = T[90_001:100_000] # últimos 10 mil valores (recomendable)
+    T2 = sinreemplazo(T[10_001:100_000], 10_000) # muestra sin reemplazo (muy recomendable)
     median.([T0, T1, T2])
 end
 post.qθ(0.5) # estimación puntual conjugada no informativa
@@ -97,18 +96,32 @@ plot!(t, post.dθ.(t), lw = 3, label = "a posteriori no info", color = :red)
 
 begin
     plot(M[1:100], lw = 1, xlabel = L"k", ylabel = L"μ(k)", label = "")
+    title!("Parte inicial: primeros 100 pasos")
     hline!([μ], lw = 2, color = :red, label = "valor teórico de μ = $μ")
 end
 begin
+    plot(M[(end-99):end], lw = 1, xlabel = L"k", ylabel = L"μ(k)", label = "")
+    title!("Parte final: últimos 100 pasos")
+    hline!([μ], lw = 2, color = :red, label = "valor teórico de μ = $μ")
+end
+
+begin
     plot(T[1:100], lw = 1, xlabel = L"k", ylabel = L"θ(k)", label = "")
+    title!("Parte inicial: primeros 100 pasos")
     hline!([θ], lw = 2, color = :red, label = "valor teórico de θ = $θ")
 end
+begin
+    plot(T[(end-99):end], lw = 1, xlabel = L"k", ylabel = L"θ(k)", label = "")
+    title!("Parte final: últimos 100 pasos")
+    hline!([θ], lw = 2, color = :red, label = "valor teórico de θ = $θ")
+end
+
 
 
 ## ¡Cuidado con el valor inicial!
 
 begin # generar cadenas de Markov
-    μG = -100.0 # valor inicial: μG ∈ ℜ # intenta μG = 0.0
+    μG = -10.0 # valor inicial: μG ∈ ℜ # intenta μG = 0.0
     nsim = 100_000
     M = zeros(nsim)
     T = zeros(nsim)
@@ -121,18 +134,18 @@ end
 
 @show(μ); # valor teórico
 begin # estimaciones puntuales de Gibbs
-    M0 = M[1:10_000] # primeros 10 mil valores
-    M1 = M[90_001:100_000] # últimos 10 mil valores
-    M2 = sinreemplazo(M[10_001:100_000], 10_000) # muestra sin reemplazo
+    M0 = M[1:10_000] # primeros 10 mil valores (no recomendable)
+    M1 = M[90_001:100_000] # últimos 10 mil valores (recomendable)
+    M2 = sinreemplazo(M[10_001:100_000], 10_000) # muestra sin reemplazo (muy recomendable)
     median.([M0, M1, M2])
 end
 post.qμ(0.5) # estimación puntual conjugada no informativa
 
 @show(θ); # valor teórico 
 begin # estimaciones puntuales de Gibbs
-    T0 = T[1:10_000] # primeros 10 mil valores
-    T1 = T[90_001:100_000] # últimos 10 mil valores
-    T2 = sinreemplazo(T[10_001:100_000], 10_000) # muestra sin reemplazo
+    T0 = T[1:10_000] # primeros 10 mil valores (no recomendable)
+    T1 = T[90_001:100_000] # últimos 10 mil valores (recomendable)
+    T2 = sinreemplazo(T[10_001:100_000], 10_000) # muestra sin reemplazo (muy recomendable)
     median.([T0, T1, T2])
 end
 post.qθ(0.5) # estimación puntual conjugada no informativa
@@ -162,10 +175,23 @@ plot!(t, post.dθ.(t), lw = 3, label = "a posteriori no info", color = :red)
 ## Análisis de las cadenas generadas 
 
 begin
-    plot(M[1:200], lw = 1, xlabel = L"k", ylabel = L"μ(k)", label = "")
+    plot(M[1:100], lw = 1, xlabel = L"k", ylabel = L"μ(k)", label = "")
+    title!("Parte inicial: primeros 100 pasos")
     hline!([μ], lw = 2, color = :red, label = "valor teórico de μ = $μ")
 end
 begin
-    plot(T[1:200], lw = 1, xlabel = L"k", ylabel = L"θ(k)", label = "")
+    plot(M[(end-99):end], lw = 1, xlabel = L"k", ylabel = L"μ(k)", label = "")
+    title!("Parte final: últimos 100 pasos")
+    hline!([μ], lw = 2, color = :red, label = "valor teórico de μ = $μ")
+end
+
+begin
+    plot(T[1:100], lw = 1, xlabel = L"k", ylabel = L"θ(k)", label = "")
+    title!("Parte inicial: primeros 100 pasos")
+    hline!([θ], lw = 2, color = :red, label = "valor teórico de θ = $θ")
+end
+begin
+    plot(T[(end-99):end], lw = 1, xlabel = L"k", ylabel = L"θ(k)", label = "")
+    title!("Parte final: últimos 100 pasos")
     hline!([θ], lw = 2, color = :red, label = "valor teórico de θ = $θ")
 end
