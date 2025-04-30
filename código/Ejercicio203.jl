@@ -64,7 +64,7 @@ end
         L[k] = rand(Gamma(n/2 + 1, 1/(sdc(αG, βG)/2)), 1)[1]
         A[k] = rand(Normal(my - βG, n*L[k]), 1)[1]
         B[k] = rand(Normal((sxy - A[k]*sx)/sx2, L[k]/sx2), 1)[1]
-        aG, βG = A[k], B[k] 
+        αG, βG = A[k], B[k] 
     end
 end
 
