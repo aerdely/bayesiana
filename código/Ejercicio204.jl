@@ -9,7 +9,7 @@ using Random # no requiere instalación previa
 using Distributions, Plots, LaTeXStrings # previamente instalados
 
 
-# Simular muestra condicionada a partir del modelo Yx = α + βx + ε
+# Simular muestra condicionada a partir del modelo Yₓ = α + βx + ε
 begin
     α, β = 2, -5
     σ2 = 100
