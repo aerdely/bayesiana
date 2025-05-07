@@ -23,7 +23,7 @@ function ν(xx::Vector{<:Real})
             end
         end
     end
-    logν = lgamma(m) + (s + 1/2)*log(m) + z - lgamma(m + s - 1/2)
+    logν = lgamma(m) + (s + 1/2)*log(m) + z - lgamma(m + s + 1/2)
     return exp(logν)
 end
 
@@ -94,7 +94,7 @@ plot(pM₁, lw = 2, xlabel = L"n", title = L"P(M_1\,|\,\mathbf{x}_{obs}(M_2))", 
 ## Experimento 3
 
 begin
-    n = 1000 # tamaño de muestra: probar con 100 y 10,000
+    n = 100 # tamaño de muestra: probar con 100 y luego con 10,000
     λ = 0.1 
     θ = 1 / (1 + λ)
     M₁ = Poisson(λ)
