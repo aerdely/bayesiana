@@ -5,7 +5,7 @@
 
 ## Cargar código externo necesario:
 
-using Distributions
+using Distributions, Random 
 include("02probestim.jl") # en misma carpeta
 
 
@@ -16,9 +16,11 @@ begin
     n = 50 # tamaño de muestras
     α, β = 3, 5 # parámetros 
     X = Gamma(α, β)
+    Random.seed!(745) # semilla aleatoria para reproducibilidad de este ejemplo
     muestra1 = rand(X, n)
-    μ, σ = 2.7, 1.5 # parámetros
+    μ, σ = 3.7, 1.5 # parámetros
     Y = LogNormal(μ, σ)
+    Random.seed!(745) # semilla aleatoria para reproducibilidad de este ejemplo
     muestra2 = rand(Y, n)
 end;
 
@@ -59,8 +61,8 @@ end
 
 ## Experimentos 
 
-priori1 = [0 20; 0 20]
-priori2 = [-10 10; 0 20]
+priori1 = [0 20; 0 20] # parámetros α y β de la distribución Gamma 
+priori2 = [-10 10; 0 10] # parámetros μ y σ de la distirbución LogNormal
 
 @time p1 = ABC(muestra1[1:20], priori1, priori2);
 [[1,2] p1.fmp.([1,2])]
