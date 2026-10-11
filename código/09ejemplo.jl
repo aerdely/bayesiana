@@ -1,6 +1,6 @@
 ### Ejemplo muestreador de Gibbs
 ### Autor: Dr. Arturo Erdely
-### Versión: 2026-10-05
+### Versión: 2026-10-11
 
 #=
     (X,N) vector aleatorio tal que:
@@ -163,7 +163,12 @@ end
 sum(mpt, dims=2) # verificando sumas por filas igual a 1
 mpt # no todos los estados se comunican en un paso
 mpt ^ 2 # pero en 2 pasos seguro sí, por tanto la CMH es irreducible
-# y por ser espacio de estadis finito es positivo recurrente
+# --> Por ser espacio de estados finito es positivo recurrente
+# --> El periodo es una propiedad de clase de comunicación y 
+#     como todos los estados se comunican tienen el mismo periodo,
+#     y como hay estados que se comunican en 1 paso entonces
+#     la CMH es aperiódica.
+
 
 
 ## Muestreador de Gibbs 
@@ -181,6 +186,8 @@ begin # generar cadenas de Markov
         x = X[k]
     end
 end
+
+[X N]
 
 function analizar(cadena::Vector{<:Real}, posiciones::Vector{<:Int})
     # estimar empíricamente fmp marginal
@@ -235,6 +242,8 @@ begin # generar cadenas de Markov
         n = N[k]
     end
 end
+
+[X N]
 
 begin # análisis marginal de N 
     nval = [1,2,3]
