@@ -1,6 +1,6 @@
 ### Ejemplo muestreador de Gibbs
 ### Autor: Dr. Arturo Erdely
-### Versión: 2025-03-30
+### Versión: 2026-10-11
 
 #=
     (X,N) vector aleatorio tal que:
@@ -135,6 +135,42 @@ end
 
 
 
+## Cadena de Markov Homogénea
+
+xval = [0,1,2,3] # Ran X
+nval = [1,2,3]   # Ran N
+S = [] # inicializar espacio de estados
+for n in nval
+	for x in xval
+		p = pXN_mat[n, x+1]
+		if p > 0.0
+			push!(S, [x,n])
+		end
+	end
+end
+ns = length(S)
+println("espacio de $ns estados: S = ", S)
+
+# matriz de probabilidades de transición
+mpt = zeros(ns, ns)
+for i in 1:ns
+	i1, i2 = S[i]
+	for j in 1:ns
+		j1, j2 = S[j]
+		mpt[i,j] = pXcN(j1, j2) * pNcX(j2, i1)
+	end
+end
+sum(mpt, dims=2) # verificando sumas por filas igual a 1
+mpt # no todos los estados se comunican en un paso
+mpt ^ 2 # pero en 2 pasos seguro sí, por tanto la CMH es irreducible
+# --> Por ser espacio de estados finito es positivo recurrente
+# --> El periodo es una propiedad de clase de comunicación y 
+#     como todos los estados se comunican tienen el mismo periodo,
+#     y como hay estados que se comunican en 1 paso entonces
+#     la CMH es aperiódica.
+
+
+
 ## Muestreador de Gibbs 
 
 # Partiendo de X 
@@ -150,6 +186,8 @@ begin # generar cadenas de Markov
         x = X[k]
     end
 end
+
+[X N]
 
 function analizar(cadena::Vector{<:Real}, posiciones::Vector{<:Int})
     # estimar empíricamente fmp marginal
@@ -204,6 +242,8 @@ begin # generar cadenas de Markov
         n = N[k]
     end
 end
+
+[X N]
 
 begin # análisis marginal de N 
     nval = [1,2,3]
