@@ -45,87 +45,6 @@ function gibbs(muestra::AbstractVector{<:Real}, μ₀::Real = 0.0, nsims::Intege
 	return (; μ, λ)
 end
 
-function levy_empirica(X::AbstractVector{<:Real},
-                       Y::AbstractVector{<:Real};
-                       tol::Float64 = 1e-10)
-
-    isempty(X) && throw(ArgumentError("X está vacía"))
-    isempty(Y) && throw(ArgumentError("Y está vacía"))
-    tol > 0 || throw(ArgumentError("tol debe ser positiva"))
-
-    x = sort(Float64.(X))
-    y = sort(Float64.(Y))
-
-    all(isfinite, x) && all(isfinite, y) ||
-        throw(ArgumentError("Se requieren valores finitos"))
-
-    n, m = length(x), length(y)
-
-    function cumple(ε)
-        for i in 1:n
-            if i/n > searchsortedlast(y, x[i] + ε)/m + ε
-                return false
-            end
-        end
-
-        for j in 1:m
-            if j/m > searchsortedlast(x, y[j] + ε)/n + ε
-                return false
-            end
-        end
-
-        return true
-    end
-
-    cumple(0.0) && return 0.0
-
-    a, b = 0.0, 1.0
-
-    while b - a > tol
-        ε = (a + b)/2
-
-        if cumple(ε)
-            b = ε
-        else
-            a = ε
-        end
-    end
-
-    return b
-end
-
-function diagnostico_levy(x::AbstractVector{<:Real};
-                          bloque::Int = 10_000, gráfica::Bool = true)
-
-    bloque > 0 || throw(ArgumentError("Bloque inválido"))
-    length(x) % bloque == 0 || throw(ArgumentError("Longitud no divisible por bloque"))
-
-    k = div(length(x), bloque)
-    k >= 2 || throw(ArgumentError("Se requieren al menos 2 bloques"))
-
-    F = [@view x[(i-1)*bloque+1:i*bloque] for i in 1:k]
-
-    consecutivas = [levy_empirica(F[i], F[i+1]) for i in 1:k-1]
-
-    contra_final = [levy_empirica(F[i], F[end]) for i in 1:k-1]
-
-    if gráfica
-	println("Diagnóstico de Lévy de la cadena")
-	println("--------------------------------")
-	println("Longitud de la cadena: ", length(x))
-	println("Tamaño por bloque: ", bloque)
-	println("Distancia máxima entre bloques:")
-	println("consecutivos = ", maximum(consecutivas))
-	println("contra final = ", maximum(contra_final))
-	plot(consecutivas, ylabel = "distancia de Lévy", label = "consecutivas", lw = 2)
-	title!("Distancia de Lévy entre bloques de tamaño $(bloque)")
-	g = plot!(contra_final, label = "contra final", lw = 2)
-	return (; consecutivas, contra_final, gráfica = g)
-    else
-	return (; consecutivas, contra_final)
-    end
-end
-
 
 
 
@@ -175,12 +94,6 @@ end
 
 # las dos anteriores en una misma gráfica
 plot(tray1, tray2, layout = (2, 1)) 
-
-# diagnóstico de Lévy
-begin
-	Dμ = diagnostico_levy(G.μ, bloque = 10_000)
-	Dμ.gráfica
-end
 
 # parte final seleccionada
 begin  
@@ -243,13 +156,6 @@ end
 
 # las dos anteriores en una misma gráfica
 plot(tray3, tray4, layout = (2, 1)) 
-
-# diagnóstico de Lévy
-begin
-	Dλ = diagnostico_levy(G.λ, bloque = 10_000)
-	Dλ.gráfica
-end
-
 
 # parte final seleccionada
 begin  
