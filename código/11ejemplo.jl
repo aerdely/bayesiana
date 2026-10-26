@@ -62,8 +62,8 @@ end
 function gibbs(muestra::AbstractMatrix{<:Real}, α₀::Real = 0.0, β₀::Real = 0.0, nsims::Integer = 100_000)
 	# `muestra` es una matriz de observaciones con valores (xᵢ,yₓᵢ) por fila
 	# utiliza las funciones: ´R´, ´IS1´, ´IS2´
-	n = length(muestra)
-    	nsims > 0 || throw(ArgumentError("`nsims` debe ser positivo"))
+	n = size(muestra, 1)
+	nsims > 0 || throw(ArgumentError("`nsims` debe ser positivo"))
 
 	α = Vector{Float64}(undef, nsims + 1)
 	β = Vector{Float64}(undef, nsims + 1)
@@ -473,7 +473,5 @@ begin
 	scatter!([α], [β], [σ], mc = :cyan, label = "valor teórico")
 	scatter!([α_est], [β_est], [σ_est], mc = :red, label = "estimación puntual")
 end
-
-
 
 
