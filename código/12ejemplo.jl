@@ -51,8 +51,8 @@ end
 begin 
 	nx = 120 # tamaño de muestra X
 	ny = 90  # tamaño de muestra Y 
-	xobs = rand(X, 100)
-	yobs = rand(Y, 100)
+	xobs = rand(X, nx)
+	yobs = rand(Y, ny)
 	@time Levy = levy_empirica(xobs, yobs)
 	println()
 	println("Distancia de Lévy empírica")
