@@ -120,13 +120,13 @@ begin
 	σ = 7.6
 	x = collect(range(-10, 10, length = 301))
 	xY = ejemplo(α, β, σ, x)
-	ng = 100_000 # probar valores mayores de ser necesario
-	@time MG = gibbs(xY, 0.0, 0.0, ng) 
-	[MG.α MG.β MG.σ]
 end
 
 # Diagnósticos intracadenas
 begin
+	ng = 100_000 # probar valores mayores de ser necesario
+	@time MG = gibbs(xY, 0.0, 0.0, ng)
+	display([MG.α MG.β MG.σ])
 	println("=== α ===")
 	Dα = diagnostico(MG.α, length(x))
 	println("=== β ===")
